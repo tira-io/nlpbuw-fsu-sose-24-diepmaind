@@ -128,10 +128,14 @@ if __name__ == "__main__":
         "nlpbuw-fsu-sose-24", "authorship-verification-validation-20240408-training"
     )
 
-    # classifying the data
+
+    # Constructing a regular expression pattern with 'or' separator
+    pattern = '|'.join(phrases)
+    
+    # Applying str.contains with the pattern to check for any of the phrases, case insensitive
     prediction = (
-        text_validation.set_index("id")["text"]
-        .str.contains("delve", case=False)
+        text_validation.set_index("id")['text']
+        .str.contains(pattern, case=False)
         .astype(int)
     )
 
