@@ -5,7 +5,7 @@ on:
       dockerpath:
         description: The path to the directory of your submission. Should contain a Dockerfile that executes your code.
         required: true
-        default: authorship-verification-trivial
+        default: authorship-verification-complex
       dataset:
         type: choice
         description: Dataset
