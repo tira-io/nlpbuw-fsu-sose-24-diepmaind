@@ -6,8 +6,12 @@ from tira.third_party_integrations import get_output_directory
 from sklearn.feature_extraction.text import CountVectorizer
 
 def preprocess_text(text):
-    """ Convert text to lowercase and remove punctuation. """
-    return text.lower().translate(str.maketrans('', '', string.punctuation))
+    # Convert to lowercase
+    text = text.lower()
+    # Remove punctuation (optional, based on your need)
+    text = pd.Series(text).str.replace('[^\w\s]', '', regex=True)
+    return text
+
 
 def calculate_weighted_score(text_df, word_probabilities):
     """ Calculate a weighted score based on the word probabilities for each text. """
