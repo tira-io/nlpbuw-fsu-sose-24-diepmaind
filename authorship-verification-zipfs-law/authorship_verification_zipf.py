@@ -9,7 +9,7 @@ def preprocess_text(text):
     # Convert to lowercase
     text = text.lower()
     # Remove punctuation (optional, based on your need)
-    text = pd.Series(text).str.replace('[^\w\s]', '', regex=True)
+    text = text.replace('[^\w\s]', '', regex=True)
     return text
 
 
