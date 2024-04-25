@@ -1,15 +1,17 @@
 import pandas as pd
+import re
 from pathlib import Path
 
 from tira.rest_api_client import Client
 from tira.third_party_integrations import get_output_directory
 from sklearn.feature_extraction.text import CountVectorizer
 
+
 def preprocess_text(text):
     # Convert to lowercase
     text = text.lower()
-    # Remove punctuation (optional, based on your need)
-    text = text.replace('[^\w\s]', '', regex=True)
+    # Remove punctuation and non-word characters using regex
+    text = re.sub(r'[^\w\s]', '', text)
     return text
 
 
