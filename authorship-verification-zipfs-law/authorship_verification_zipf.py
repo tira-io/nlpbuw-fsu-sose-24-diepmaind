@@ -1,3 +1,4 @@
+import pandas as pd
 from pathlib import Path
 
 from tira.rest_api_client import Client
@@ -5,38 +6,29 @@ from tira.third_party_integrations import get_output_directory
 from sklearn.feature_extraction.text import CountVectorizer
 
 def preprocess_text(text):
-    # Convert to lowercase
-    text = text.lower()
-    # Remove punctuation (optional, based on your need)
-    text = pd.Series(text).str.replace('[^\w\s]', '', regex=True)
-    return text
+    """ Convert text to lowercase and remove punctuation. """
+    return text.lower().translate(str.maketrans('', '', string.punctuation))
 
-# mp = [{1:0}{1:2}]
-# mp[0][1]
+def calculate_weighted_score(text_df, word_probabilities):
+    """ Calculate a weighted score based on the word probabilities for each text. """
+    scores = []
+    for text in text_df['processed_text']:
+        words = text.split()
+        word_count = len(words)
+        word_freq = {word: words.count(word) / word_count for word in set(words)}
 
-def calculate_weighted_score(row, word_probabilities):
-    """ Calculate a weighted score based on the word probabilities. """
-    list_words = [row[i]['processed_text'].split() for i in range(len(row)) ]
-    list_mp = [1] * len(list_words)
-    for i in range(len(list_words)):
-        mp = {}
-        n = len(list_words[i])
-        for word in list_words[i]:
-            if word in mp:
-                mp[word] += 1
-            else:
-                mp[word] = mp.get(word,0) + 1
-        for key in mp.keys():
-            mp[key] /= n
-        for key in word_probabilities.keys():
-            if not are_numbers_close(word_probabilities[key],mp[key],tolerance=0.05):
-                list_mp[i] = 0
-    return list_mp
+        score = 1  # Start assuming the text is fine
+        for word, prob in word_probabilities.items():
+            if word in word_freq:
+                if not are_numbers_close(prob, word_freq[word], tolerance=0.05):
+                    score = 0  # Set score to 0 if any crucial word frequency is off
+                    break
+        scores.append(score)
+    return scores
 
 def are_numbers_close(num1, num2, tolerance=0.01):
+    """ Check if two numbers are within a certain tolerance. """
     return abs(num1 - num2) < tolerance
-
-
 
 if __name__ == "__main__":
 
@@ -69,18 +61,14 @@ if __name__ == "__main__":
     targets_validation = tira.pd.truths(
         "nlpbuw-fsu-sose-24", "authorship-verification-validation-20240408-training"
     )
-    for i in range(len(text_validation)):
-        text_validation[i]['processed_text'] = text_validation[i]["text"].apply(preprocess_text) 
+    # Preprocess text
+    text_validation['processed_text'] = text_validation['text'].apply(preprocess_text)
 
-    # Applying str.contains with the pattern to check for any of the phrases, case insensitive
-    prediction = calculate_weighted_score(text_validation, word_probabilities)
+    # Calculate scores for each text
+    text_validation['scores'] = calculate_weighted_score(text_validation, word_probabilities)
 
-    # converting the prediction to the required format
-    prediction.name = "generated"
-    prediction = prediction.reset_index()
-
-    # saving the prediction
+    # Save the prediction
     output_directory = get_output_directory(str(Path(__file__).parent))
-    prediction.to_json(
+    text_validation[['scores']].to_json(
         Path(output_directory) / "predictions.jsonl", orient="records", lines=True
     )
