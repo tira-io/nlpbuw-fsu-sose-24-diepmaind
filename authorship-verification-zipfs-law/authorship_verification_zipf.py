@@ -24,15 +24,15 @@ def calculate_weighted_score(text_df, word_probabilities):
         score = 1  # Start assuming the text is fine
         for word, prob in word_probabilities.items():
             if word in word_freq:
-                if not are_numbers_close(prob, word_freq[word], tolerance=0.05):
+                if not are_numbers_close(prob, word_freq[word], tolerance=0.01):
                     score = 0  # Set score to 0 if any crucial word frequency is off
                     break
         scores.append(score)
     return scores
 
-def are_numbers_close(num1, num2, tolerance=0.01):
+def are_numbers_close(num1, num2, tolerance=0.05):
     """ Check if two numbers are within a certain tolerance. """
-    return abs(num1 - num2) < tolerance
+    return abs(num1 - num2) < num1 * tolerance
 
 if __name__ == "__main__":
 
