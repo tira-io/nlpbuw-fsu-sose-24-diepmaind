@@ -69,6 +69,6 @@ if __name__ == "__main__":
 
     # Save the prediction
     output_directory = get_output_directory(str(Path(__file__).parent))
-    text_validation[['scores']].to_json(
+    text_validation.to_json(
         Path(output_directory) / "predictions.jsonl", orient="records", lines=True
     )
