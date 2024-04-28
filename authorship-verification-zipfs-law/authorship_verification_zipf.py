@@ -7,21 +7,11 @@ from tira.third_party_integrations import get_output_directory
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-def preprocess_text(text):
-    # Convert to lowercase
-    text = text.lower()
-    # Remove punctuation and non-word characters using regex
-    text = re.sub(r'[^\w\s]', '', text)
-    return text
-
-
-def calculate_weighted_score(text_df, word_probabilities):
+def calculate_weighted_score(text_df: pd.Series, word_probabilities):
     """ Calculate a weighted score based on the word probabilities for each text. """
     scores = []
-    for text in text_df['processed_text']:
-        words = text.split()
-        word_count = len(words)
-        word_freq = {word: words.count(word) / word_count for word in set(words)}
+    for words in text_df.values:
+        word_freq = {word: words.count(word) / len(words) for word in words}
 
         score = 1  # Start assuming the text is fine
         for word, prob in word_probabilities.items():
@@ -68,10 +58,15 @@ if __name__ == "__main__":
         "nlpbuw-fsu-sose-24", "authorship-verification-validation-20240408-training"
     )
     # Preprocess text
-    text_validation['processed_text'] = text_validation['text'].apply(preprocess_text)
+    text_validation = text_validation.assign(processed_text=text_validation["text"].str.replace(r'[^\w\s]', '/', regex=True).str.split('/'))
 
-    # Calculate scores for each text
-    text_validation['scores'] = calculate_weighted_score(text_validation, word_probabilities)
+
+    # classifying the data
+    prediction =pd.Series(calculate_weighted_score(text_validation.set_index("id")["processed_text"], word_probabilities))
+
+    # converting the prediction to the required format
+    prediction.name = "generated"
+    prediction = prediction.reset_index()
 
     # Save the prediction
     output_directory = get_output_directory(str(Path(__file__).parent))
