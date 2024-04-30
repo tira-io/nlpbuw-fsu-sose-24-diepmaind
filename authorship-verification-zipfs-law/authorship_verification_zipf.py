@@ -22,7 +22,7 @@ def calculate_weighted_score(text_df: pd.Series, word_probabilities):
         scores.append(score)
     return scores
 
-def are_numbers_close(num1, num2, tolerance=0.05):
+def are_numbers_close(num1, num2, tolerance=1):
     """ Check if two numbers are within a certain tolerance. """
     return abs(num1 - num2) < num1 * tolerance
 
