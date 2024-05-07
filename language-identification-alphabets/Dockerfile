@@ -1,7 +1,7 @@
 FROM fschlatt/natural-language-processing-exercises:0.0.1
 
 RUN apt-get update 
-RUN pip3 install
+RUN apt-get install python3-pip
 
 ADD language_identification_alphabets.py /code/language_identification_alphabets.py
 
