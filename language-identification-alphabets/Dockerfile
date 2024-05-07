@@ -1,7 +1,7 @@
 FROM fschlatt/natural-language-processing-exercises:0.0.1
 
 RUN apt-get update 
-RUN apt-get install python3-pip
+RUN pip3 install aaransia
 
 ADD language_identification_alphabets.py /code/language_identification_alphabets.py
 
