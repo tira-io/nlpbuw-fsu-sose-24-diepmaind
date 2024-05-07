@@ -19,17 +19,7 @@ if __name__ == "__main__":
     )
     alphabets = get_alphabets()
     alphabet_codes = get_alphabets_codes()
-    mp = {}
-
-    # Iterate through each alphabet
-    for alphabet, code in zip(alphabets, alphabet_codes):
-        unique_chars = []
-        # Check each character in the alphabet
-        for char in alphabet:
-            # If the character is unique, add it to the list
-            if all(char not in other_alphabet for other_alphabet in alphabets if other_alphabet != alphabet):
-                unique_chars.append(char)
-        mp[code] = unique_chars
+    mp = dict(zip(alphabets, alphabet_codes))
 
     alph_prop = []
     for code in mp.keys():
