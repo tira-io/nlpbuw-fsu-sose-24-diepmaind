@@ -16,7 +16,7 @@ if __name__ == "__main__":
     labels = tira.pd.truths(
         "nlpbuw-fsu-sose-24", "paraphrase-identification-train-20240515-training"
     ).set_index("id")
-    df = text.join(labels)
+    df = text.join(labels.set_index("id"))
 
     # Train the model
     model = Pipeline(
