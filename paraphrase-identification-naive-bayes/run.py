@@ -20,11 +20,11 @@ if __name__ == "__main__":
     model = load(Path(__file__).parent / "model.joblib")
     sentences['combined_sentences'] = sentences['sentence1'] + " " + sentences['sentence2']
     predictions = model.predict(sentences['combined_sentences'])
-    sentences["labels"] = predictions
-    sentences = sentences[["id", "labels"]]
+    sentences["label"] = predictions
+    sentences = sentences[["id", "label"]]
 
     # Save the predictions
     output_directory = get_output_directory(str(Path(__file__).parent))
-    df.to_json(
+    sentences.to_json(
         Path(output_directory) / "predictions.jsonl", orient="records", lines=True
     )
