@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     # Load the data
     tira = Client()
-    df = tira.pd.inputs(
+    sentences = tira.pd.inputs(
         "nlpbuw-fsu-sose-24", "paraphrase-identification-validation-20240515-training"
     ).set_index("id")
 
@@ -18,9 +18,11 @@ if __name__ == "__main__":
     # df["label"] = (df["distance"] <= 10).astype(int
     # Load the model and make predictions
     model = load(Path(__file__).parent / "model.joblib")
-    predictions = model.predict(df["text"])
-    df["labels"] = predictions
-    df = df[["id", "labels"]]
+    sentences['combined_sentences'] = sentences['sentence1'] + " " + sentences['sentence2']
+    sentences = sentences.join(labels.set_index("id"))
+    predictions = model.predict(sentences['combined_sentences'])
+    sentences["labels"] = predictions
+    sentences = sentences[["id", "labels"]]
 
     # Save the predictions
     output_directory = get_output_directory(str(Path(__file__).parent))
