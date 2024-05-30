@@ -21,7 +21,6 @@ if __name__ == "__main__":
     sentences['combined_sentences'] = sentences['sentence1'] + " " + sentences['sentence2']
     predictions = model.predict(sentences['combined_sentences'])
     sentences["label"] = predictions
-    sentences = sentences[["id", "label"]]
 
     # Save the predictions
     output_directory = get_output_directory(str(Path(__file__).parent))
